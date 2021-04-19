@@ -5,10 +5,11 @@ import { ProyectosComponent } from './proyectos/proyectos.component';
 import { EstadisticasComponent } from './estadisticas/estadisticas.component';
 import { ProyectoDetailComponent } from './proyecto-detail/proyecto-detail.component'
 
-const routes:Routes = [
-  {path: 'proyectos',component: ProyectosComponent},
-  {path: 'proyectos/:proyecto:id',component:EstadisticasComponent},
-  {path: 'estadisticas',component:ProyectoDetailComponent}
+const routes: Routes = [
+  { path: 'proyectos', component: ProyectosComponent },
+  { path: 'proyectos/:id', component: ProyectoDetailComponent },
+  { path: 'estadisticas', component: EstadisticasComponent },
+  { path: '', redirectTo: '/estadisticas', pathMatch: 'full' },
 ];
 
 

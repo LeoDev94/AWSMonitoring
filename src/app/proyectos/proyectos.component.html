@@ -1,1 +1,34 @@
-<p>proyectos works!</p>
+<div class="global-page-spacing">
+    <form>
+        <div class="form-group form-inline">
+            Buscar: <input class="form-control ml-2" type="text" [formControl]="filter" />
+        </div>
+    </form>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Estado</th>
+                <th scope="col">Código</th>
+                <th scope="col">Estado de despliegue</th>
+                <th scope="col">Fecha de despliegue</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="cursor: pointer;" *ngFor="let project of projects$ | async; index as i" (click)="projectDetail(project.id)">
+                <td>
+                    <ngb-highlight [result]="project.state" [term]="filter.value"></ngb-highlight>
+                </td>
+                <td>
+                    <ngb-highlight [result]="project.code" [term]="filter.value"></ngb-highlight>
+                </td>
+                <td>
+                    <ngb-highlight [result]="project.deploymentState" [term]="filter.value"></ngb-highlight>
+                </td>
+                <td>
+                    <ngb-highlight [result]="project.deploymentDate.toString()" [term]="filter.value"></ngb-highlight>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
