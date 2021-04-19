@@ -12,7 +12,8 @@
                 <a ngbNavLink>Resumen</a>
                 <ng-template ngbNavContent>
                     <div style="margin: 30px;">
-                        <div style="width: 300px; border: 0.5px solid rgb(226, 217, 217); border-radius: 10px;">
+                        <div
+                            style="width: 300px; border: 0.5px solid rgb(226, 217, 217); border-radius: 10px; float: left;">
                             <div style="height: 60px; width: 100%; border-bottom: 0.5px solid rgb(226, 217, 217);">
                                 <div style="padding-top: 15px; padding-bottom: 15px; padding-left: 15px;">
                                     <p style="font-size: 18px; color: rgb(9, 8, 102); font-weight: bold;">Información
@@ -51,6 +52,18 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div ngbDropdown class="d-inline-block" style="float: left;margin: 100px 70px 100px 70px;">
+                            <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Métricas</button>
+                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                <button ngbDropdownItem>CPU Utilization</button>
+                                <button ngbDropdownItem>Network</button>
+                                <button ngbDropdownItem>Storage</button>
+                            </div>
+                        </div>
+
+                        <div style="width: 60%; float: left" echarts [options]="options" class="demo-chart"></div>
                     </div>
                 </ng-template>
             </ng-container>
@@ -68,8 +81,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="cursor: pointer;"
-                                    *ngFor="let cost of project?.servicesCost; index as i">
+                                <tr style="cursor: pointer;" *ngFor="let cost of project?.servicesCost; index as i">
                                     <td>
                                         <ngb-highlight [result]="cost.service"></ngb-highlight>
                                     </td>
@@ -81,7 +93,8 @@
                                         </ngb-highlight>
                                     </td>
                                     <td>
-                                        <ngb-highlight [result]="cost.previousMonthCost.toString() + '$'"></ngb-highlight>
+                                        <ngb-highlight [result]="cost.previousMonthCost.toString() + '$'">
+                                        </ngb-highlight>
                                     </td>
                                 </tr>
                             </tbody>
