@@ -1,22 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import {NgxChartsModule } from '@swimlane/ngx-charts'
+
 
 var datos = [
   {
-    "name": "Germany",
+    "name": "Desplegados",
     "value": 8940000
   },
   {
-    "name": "USA",
+    "name": "No desplegados",
     "value": 5000000
-  },
-  {
-    "name": "France",
-    "value": 7200000
-  },
-    {
-    "name": "UK",
-    "value": 6200000
   }
 ];
 
@@ -26,8 +18,19 @@ var datos = [
   styleUrls: ['./estadisticas.component.css']
 })
 export class EstadisticasComponent implements OnInit {
-
-  constructor() { }
+  datos:any[] = [];
+  view:[number,number] = [700, 400];
+  gradient: boolean = true;
+  showLegend: boolean = true;
+  showLabels: boolean = true;
+  isDoughnut: boolean = false;
+  legendPosition: string = 'below';
+  colorScheme = {
+    domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
+  };
+  constructor() { 
+    Object.assign(this,{datos});
+  }
 
   ngOnInit(): void {
   }
