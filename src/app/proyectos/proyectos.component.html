@@ -38,10 +38,10 @@
                     <ngb-highlight [result]="project.deploymentDate.toString()" [term]="filter.value"></ngb-highlight>
                 </td>
                 <td>
-                    <button style="width: 40%;" type="button" class="btn btn-warning" (click)="editProject(project)">
+                    <button style="width: 40%;" type="button" class="btn btn-warning" ngbTooltip="Editar Proyecto" (click)="editProject(project)">
                         <fa-icon [icon]="faEdit"></fa-icon>
                     </button>
-                    <button style="width: 40%;" type="button" class="btn btn-danger float-right"
+                    <button style="width: 40%;" type="button" class="btn btn-danger float-right" ngbTooltip="Eliminar Proyecto"
                         (click)="deleteProject(project)">
                         <fa-icon [icon]="faTrashAlt"></fa-icon>
                     </button>
