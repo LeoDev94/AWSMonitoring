@@ -1,26 +1,35 @@
 <div class="global-page-spacing">
     <form>
         <div class="form-group form-inline">
-            Buscar: <input class="form-control ml-2" type="text" [formControl]="filter" />
+            {{!newProyectView && !editProjectView ? 'Buscar' : ''}} <input *ngIf="(newProyectView == false && editProjectView == false)"
+                class="form-control ml-2" type="text" [formControl]="filter" />
+
+            <label style="margin-left: 50px; background-color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                class="btn-primary" (click)="newProyect()" ngbButtonLabel>
+                {{newProyectView || editProjectView ? 'Volver' : 'Nuevo'}}
+            </label>
         </div>
     </form>
 
-    <table class="table table-striped">
+    <table *ngIf="(newProyectView == false && editProjectView == false)" class="table table-striped">
         <thead>
             <tr>
                 <th scope="col">Estado</th>
                 <th scope="col">Código</th>
                 <th scope="col">Estado de despliegue</th>
                 <th scope="col">Fecha de despliegue</th>
+                <th scope="col">Acciones</th>
             </tr>
         </thead>
         <tbody>
-            <tr style="cursor: pointer;" *ngFor="let project of projects$ | async; index as i" (click)="projectDetail(project.id)">
+            <tr *ngFor="let project of projects$ | async; index as i">
                 <td>
                     <ngb-highlight [result]="project.state" [term]="filter.value"></ngb-highlight>
                 </td>
-                <td>
-                    <ngb-highlight [result]="project.code" [term]="filter.value"></ngb-highlight>
+                <td style="cursor: pointer;" (click)="projectDetail(project.id)">
+                    <a href="javascript:void(0);">
+                        <ngb-highlight [result]="project.code" [term]="filter.value"></ngb-highlight>
+                    </a>
                 </td>
                 <td>
                     <ngb-highlight [result]="project.deploymentState" [term]="filter.value"></ngb-highlight>
@@ -28,7 +37,90 @@
                 <td>
                     <ngb-highlight [result]="project.deploymentDate.toString()" [term]="filter.value"></ngb-highlight>
                 </td>
+                <td>
+                    <button style="width: 40%;" type="button" class="btn btn-warning" ngbTooltip="Editar Proyecto" (click)="editProject(project)">
+                        <fa-icon [icon]="faEdit"></fa-icon>
+                    </button>
+                    <button style="width: 40%;" type="button" class="btn btn-danger float-right" ngbTooltip="Eliminar Proyecto"
+                        (click)="deleteProject(project)">
+                        <fa-icon [icon]="faTrashAlt"></fa-icon>
+                    </button>
+                </td>
             </tr>
         </tbody>
     </table>
+
+    <div *ngIf="newProyectView || editProjectView" style="width: 100%;" class="d-flex justify-content-center">
+        <div style="width: 70%;">
+            <p *ngIf="newProyectView || editProjectView" class="align-middle"
+                style="font-size: 20px; color: rgb(9, 8, 102); font-weight: bold;"><span>{{editProjectView ? 'Editar' :
+                    'Nuevo'}} Proyecto</span>
+            </p>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend" style="width: 20%;">
+                    <span style="width: 100%;" class="input-group-text" id="basic-addon1">Código de Proyecto</span>
+                </div>
+                <input type="text" class="form-control" [(ngModel)]="code" placeholder="Código"
+                    aria-label="Código de Proyecto" aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend" style="width: 20%;">
+                    <span style="width: 100%;" class="input-group-text" id="basic-addon1">Estado</span>
+                </div>
+                <input type="text" class="form-control" [(ngModel)]="state" placeholder="Estado" aria-label="Estado"
+                    aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend" style="width: 20%;">
+                    <span style="width: 100%;" class="input-group-text" id="basic-addon1">Estado de despliegue</span>
+                </div>
+                <input type="text" class="form-control" [(ngModel)]="deploymentState" placeholder="Estado de despliegue"
+                    aria-label="Estado de despliegue" aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend" style="width: 20%;">
+                    <span style="width: 100%;" class="input-group-text" id="basic-addon1">Fecha de despliegue</span>
+                </div>
+                <input type="text" class="form-control" [(ngModel)]="deploymentDate" placeholder="Fecha de despliegue"
+                    aria-label="Fecha de despliegue" aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend" style="width: 20%;">
+                    <span style="width: 100%;" class="input-group-text" id="basic-addon1">Repositorio</span>
+                </div>
+                <input type="text" class="form-control" [(ngModel)]="repository" placeholder="Repositorio"
+                    aria-label="Repositorio" aria-describedby="basic-addon1">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend" style="width: 20%;">
+                    <span style="width: 100%;" class="input-group-text" id="basic-addon1">Jefes de Proyecto</span>
+                </div>
+                <input type="text" class="form-control" [(ngModel)]="pmTempName" placeholder="Jefes de Proyecto"
+                    aria-label="Jefes de Proyecto" aria-describedby="basic-addon1">
+
+                <div class="input-group-append" style="width: 10%;">
+                    <button style="width: 100%;" type="button" class="btn btn-success"
+                        (click)="addProjectManager()">Añadir</button>
+                </div>
+            </div>
+            <ul class="list-group" style="width: 50%;">
+                <li class="list-group-item align-middle" *ngFor="let pm of projectManagers; index as i">{{pm}} <button
+                        style="width: 50px;" type="button" class="btn btn-danger float-right"
+                        (click)="deleteProjectManager(pm)">
+                        <fa-icon [icon]="faTrashAlt"></fa-icon>
+                    </button></li>
+            </ul>
+
+            <div class="input-group mb-3" style="margin-top: 40px;">
+                <button style="width: 100%; background-color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                    type="button" class="btn btn-success"
+                    (click)="editProjectView ? saveProject(true) : saveProject()">Guardar</button>
+            </div>
+        </div>
+    </div>
 </div>

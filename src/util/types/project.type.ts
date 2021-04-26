@@ -10,7 +10,7 @@ export interface Project {
     state: string;
     code: string;
     deploymentState: string;
-    deploymentDate: String;
+    deploymentDate: string;
     projectManagers: string[];
     repository: string;
     servicesCost: ServiceCost[];
