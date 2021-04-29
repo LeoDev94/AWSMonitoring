@@ -3,6 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PROJECTS } from 'src/util/constants';
 import { Project } from 'src/util/types';
 import { faUsers, faRocket, faCodeBranch, faArchive, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import { ProyectoService } from '../proyecto.service';
+import { number } from 'echarts';
+
 
 @Component({
   selector: 'app-proyecto-detail',
@@ -21,9 +24,8 @@ export class ProyectoDetailComponent implements OnInit {
 
   options: any;
 
-  constructor(private route: ActivatedRoute, private router: Router) {
-    let id = this.route.snapshot.paramMap.get('id');
-    let projects = PROJECTS.filter((proj) => {
+  constructor(private route: ActivatedRoute, private router: Router,private proyectoService: ProyectoService) {
+    /*let projects = PROJECTS.filter((proj) => {
       return proj.id.toString() == id;
     })
 
@@ -31,6 +33,14 @@ export class ProyectoDetailComponent implements OnInit {
       this.noProject = true;
     } else {
       this.project = projects[0];
+    }*/
+  }
+
+  getProyecto(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.getProyecto(nid).subscribe(proyect=>this.project=proyect);
     }
   }
 
@@ -39,6 +49,7 @@ export class ProyectoDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getProyecto();
     const xAxisData = [];
     const data1 = [];
     const data2 = [];

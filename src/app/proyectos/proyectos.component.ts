@@ -21,7 +21,7 @@ export class ProyectosComponent implements OnInit{
   //projects$: Observable<Project[]>;
   projects$:Project[] = [];
   filter = new FormControl('');
-
+  selectedProject:Project|null = null;
   localProjects = PROJECTS;
 
   faTrashAlt = faTrashAlt;
@@ -54,8 +54,20 @@ export class ProyectosComponent implements OnInit{
     this.projectSearch('');
   }
 
-  getProyectos():void{
-    this.proyectoService.getProyectos().subscribe(proyectos=>this.projects$ = proyectos);
+  getProyectos(){
+    this.proyectoService.getProyectos().subscribe(proyectos=>{
+      this.projects$ = proyectos;
+      this.projects$ = this.projects$.map((project:Project)=>{
+        project.deploymentState = project.ultimoDespliegue?'Desplegado':'No Desplegado';
+        return project;
+      })
+    });
+  }
+
+  createProyecto(){
+    //TODO: Finish
+    let nombre = 'nuevo';
+    this.proyectoService.addProyecto({nombre} as  Project).subscribe(project=>this.projects$.push(project));
   }
 
   projectSearch(text: string): Project[] {
@@ -112,7 +124,7 @@ export class ProyectosComponent implements OnInit{
       if (edit) {
         let projectPayload: Project = {
           id: this.idTemp,
-          name:'',
+          nombre:'',
           manager1:'',
           manager2:'',
           tecnologia:'',
@@ -136,7 +148,7 @@ export class ProyectosComponent implements OnInit{
               previousMonthCost: 18
             },
           ],
-          repository: this.repository,
+          repositorio: this.repository,
           projectManagers: this.projectManagers
         }
 
@@ -160,7 +172,7 @@ export class ProyectosComponent implements OnInit{
       } else {
         let projectPayload: Project = {
           id: Math.random() * 10,
-          name:'',
+          nombre:'',
           manager1:'',
           manager2:'',
           tecnologia:'',
@@ -184,7 +196,7 @@ export class ProyectosComponent implements OnInit{
               previousMonthCost: 18
             },
           ],
-          repository: this.repository,
+          repositorio: this.repository,
           projectManagers: this.projectManagers
         }
         this.localProjects.push(projectPayload);
@@ -212,8 +224,12 @@ export class ProyectosComponent implements OnInit{
     this.state = project.estado;
     this.deploymentState = project.deploymentState;
     this.deploymentDate = project.ultimoDespliegue;
-    this.repository = project.repository;
+    this.repository = project.repositorio;
     this.projectManagers = project.projectManagers;
+  }
+
+  newProject(){
+    
   }
 
   sleep(time: any) {

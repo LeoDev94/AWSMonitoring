@@ -3,7 +3,7 @@ import { Project } from "../types";
 export const PROJECTS: Project[] = [
     {
         id: 1,
-        name:'Proyecto',
+        nombre:'Proyecto',
         estado: 'Activo',
         codigo: 'PRY201999',
         deploymentState: 'No Desplegado',
@@ -14,7 +14,7 @@ export const PROJECTS: Project[] = [
         tecnologia:'',
         tipo:'',
         projectManagers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
-        repository: 'https://git.com',
+        repositorio: 'https://git.com',
         servicesCost: [
             {
                 service: 'Code Deploy',
@@ -32,7 +32,7 @@ export const PROJECTS: Project[] = [
     },
     {
         id: 2,
-        name:'Proyecto',
+        nombre:'Proyecto',
         estado: 'Activo',
         codigo: 'PRY201999',
         deploymentState: 'No Desplegado',
@@ -43,7 +43,7 @@ export const PROJECTS: Project[] = [
         tecnologia:'',
         tipo:'',
         projectManagers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
-        repository: 'https://git.com',
+        repositorio: 'https://git.com',
         servicesCost: [
             {
                 service: 'Code Deploy',
@@ -61,7 +61,7 @@ export const PROJECTS: Project[] = [
     },
     {
         id: 3,
-        name:'Proyecto',
+        nombre:'Proyecto',
         estado: 'Activo',
         codigo: 'PRY201999',
         deploymentState: 'No Desplegado',
@@ -72,7 +72,7 @@ export const PROJECTS: Project[] = [
         tecnologia:'',
         tipo:'',
         projectManagers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
-        repository: 'https://git.com',
+        repositorio: 'https://git.com',
         servicesCost: [
             {
                 service: 'Code Deploy',
