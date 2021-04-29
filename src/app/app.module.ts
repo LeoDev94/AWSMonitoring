@@ -14,6 +14,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgxEchartsModule } from 'ngx-echarts';
 import {NgxChartsModule } from '@swimlane/ngx-charts'
+import {HttpClientModule} from '@angular/common/http'
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import {NgxChartsModule } from '@swimlane/ngx-charts'
   ],
   imports: [
     BrowserModule,
+    HttpClientModule,
     AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,

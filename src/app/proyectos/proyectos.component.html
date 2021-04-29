@@ -22,20 +22,20 @@
             </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let project of projects$ | async; index as i">
+            <tr *ngFor="let project of projects$; index as i">
                 <td>
-                    <ngb-highlight [result]="project.state" [term]="filter.value"></ngb-highlight>
+                    <ngb-highlight [result]="project.estado" [term]="filter.value"></ngb-highlight>
                 </td>
                 <td style="cursor: pointer;" (click)="projectDetail(project.id)">
                     <a href="javascript:void(0);">
-                        <ngb-highlight [result]="project.code" [term]="filter.value"></ngb-highlight>
+                        <ngb-highlight [result]="project.codigo" [term]="filter.value"></ngb-highlight>
                     </a>
                 </td>
                 <td>
                     <ngb-highlight [result]="project.deploymentState" [term]="filter.value"></ngb-highlight>
                 </td>
                 <td>
-                    <ngb-highlight [result]="project.deploymentDate.toString()" [term]="filter.value"></ngb-highlight>
+                    <ngb-highlight [result]="project.ultimoDespliegue.toString()" [term]="filter.value"></ngb-highlight>
                 </td>
                 <td>
                     <button style="width: 40%;" type="button" class="btn btn-warning" ngbTooltip="Editar Proyecto" (click)="editProject(project)">

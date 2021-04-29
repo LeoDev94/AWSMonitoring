@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
-
+import {ProyectoService} from 'src/app/proyecto.service'
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { PROJECTS } from 'src/util/constants';
@@ -16,9 +16,10 @@ import Swal from 'sweetalert2';
   templateUrl: './proyectos.component.html',
   styleUrls: ['./proyectos.component.css'],
 })
-export class ProyectosComponent {
+export class ProyectosComponent implements OnInit{
 
-  projects$: Observable<Project[]>;
+  //projects$: Observable<Project[]>;
+  projects$:Project[] = [];
   filter = new FormControl('');
 
   localProjects = PROJECTS;
@@ -40,20 +41,33 @@ export class ProyectosComponent {
   pmTempName = "";
   idTemp = 0;
 
-  constructor(private router: Router) {
-    this.projects$ = this.filter.valueChanges.pipe(
+  constructor(private router: Router,private proyectoService:ProyectoService) {
+    //this.proyectoService.getProyectos().subscribe(proyectos=>this.projects$ = proyectos);
+    /*this.projects$ = this.filter.valueChanges.pipe(
       startWith(''),
       map(text => this.projectSearch(text))
-    );
+    );*/
+  }
+
+  ngOnInit(){
+    this.getProyectos();
+    this.projectSearch('');
+  }
+
+  getProyectos():void{
+    this.proyectoService.getProyectos().subscribe(proyectos=>this.projects$ = proyectos);
   }
 
   projectSearch(text: string): Project[] {
-    return this.localProjects.filter(project => {
+    //var projects: Project[] = [];
+    //this.proyectoService.getProyectos().subscribe(proyectos=>projects = proyectos);
+    
+    return this.projects$.filter(project => {
       const term = text.toLowerCase();
-      return project.code.toLowerCase().includes(term)
-        || project.state.toLowerCase().includes(term)
+      return project.codigo.toLowerCase().includes(term)
+        || project.estado.toLowerCase().includes(term)
         || project.deploymentState.toLowerCase().includes(term)
-        || project.deploymentDate.includes(term)
+        || project.ultimoDespliegue.includes(term)
     })
   }
 
@@ -98,10 +112,16 @@ export class ProyectosComponent {
       if (edit) {
         let projectPayload: Project = {
           id: this.idTemp,
-          code: this.code,
-          state: this.state,
+          name:'',
+          manager1:'',
+          manager2:'',
+          tecnologia:'',
+          tipo:'',
+          codigo: this.code,
+          estado: this.state,
           deploymentState: this.deploymentState,
-          deploymentDate: this.deploymentDate,
+          ultimoDespliegue: this.deploymentDate,
+          primerDespliegue:'',
           servicesCost: [ //Se ingresaran los costos de manera estática ya que será parte de un servicio de aws
             {
               service: 'Code Deploy',
@@ -140,10 +160,16 @@ export class ProyectosComponent {
       } else {
         let projectPayload: Project = {
           id: Math.random() * 10,
-          code: this.code,
-          state: this.state,
+          name:'',
+          manager1:'',
+          manager2:'',
+          tecnologia:'',
+          tipo:'',
+          codigo: this.code,
+          estado: this.state,
           deploymentState: this.deploymentState,
-          deploymentDate: this.deploymentDate,
+          ultimoDespliegue: this.deploymentDate,
+          primerDespliegue:'',
           servicesCost: [ //Se ingresaran los costos de manera estática ya que será parte de un servicio de aws
             {
               service: 'Code Deploy',
@@ -182,10 +208,10 @@ export class ProyectosComponent {
 
     this.idTemp = project.id;
 
-    this.code = project.code;
-    this.state = project.state;
+    this.code = project.codigo;
+    this.state = project.estado;
     this.deploymentState = project.deploymentState;
-    this.deploymentDate = project.deploymentDate;
+    this.deploymentDate = project.ultimoDespliegue;
     this.repository = project.repository;
     this.projectManagers = project.projectManagers;
   }
@@ -207,7 +233,7 @@ export class ProyectosComponent {
   deleteProject(project: Project) {
     Swal.fire({
       title: '¿Estás seguro que quieres eliminar el proyecto?',
-      text: "Ya no podrás recuperar la información del proyecto " + project.code,
+      text: "Ya no podrás recuperar la información del proyecto " + project.codigo,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

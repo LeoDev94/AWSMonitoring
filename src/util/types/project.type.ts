@@ -7,10 +7,16 @@ interface ServiceCost {
 
 export interface Project {
     id: number,
-    state: string;
-    code: string;
+    name: string,
+    estado: string;
+    codigo: string;
     deploymentState: string;
-    deploymentDate: string;
+    ultimoDespliegue: string;
+    primerDespliegue: string;
+    manager1:string;
+    manager2:string;
+    tecnologia:string;
+    tipo:string;
     projectManagers: string[];
     repository: string;
     servicesCost: ServiceCost[];
