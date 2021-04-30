@@ -40,7 +40,10 @@ export class ProyectoDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if(id){
       const nid = +id;
-      this.proyectoService.getProyecto(nid).subscribe(proyect=>this.project=proyect);
+      this.proyectoService.getProyecto(nid).subscribe(proyect=>{
+        this.project=proyect;
+        this.project.ultimoDespliegue = this.project.ultimoDespliegue?this.project.ultimoDespliegue:'---';
+      });
     }
   }
 

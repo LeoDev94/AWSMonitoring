@@ -27,7 +27,7 @@
                                         proyecto
                                     </p>
                                     <ul>
-                                        <li *ngFor="let pm of project?.projectManagers">
+                                        <li *ngFor="let pm of project?.managers">
                                             <p style="font-size: 14px; color: rgb(9, 8, 102);">{{ pm }}</p>
                                         </li>
                                     </ul>
@@ -39,7 +39,7 @@
                                         <fa-icon [icon]="faRocket" style="margin-right: 15px;"></fa-icon> Último
                                         despliegue
                                     </p>
-                                    <p style="font-size: 14px; color: rgb(9, 8, 102);">{{ project?.ultimoDespliegue }}</p>
+                                    <p style="font-size: 14px; color: rgb(9, 8, 102);">{{ project?.ultimoDespliegue! }}</p>
                                 </div>
                             </div>
                             <div style="height: 100px; width: 100%;">

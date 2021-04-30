@@ -5,7 +5,7 @@ import {ProyectoService} from 'src/app/proyecto.service'
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { PROJECTS } from 'src/util/constants';
-import { Project } from 'src/util/types';
+import { Project,ProjectApi } from 'src/util/types';
 
 import { faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons';
 import Swal from 'sweetalert2';
@@ -21,7 +21,6 @@ export class ProyectosComponent implements OnInit{
   //projects$: Observable<Project[]>;
   projects$:Project[] = [];
   filter = new FormControl('');
-  selectedProject:Project|null = null;
   localProjects = PROJECTS;
 
   faTrashAlt = faTrashAlt;
@@ -31,15 +30,22 @@ export class ProyectosComponent implements OnInit{
   editProjectView = false;
 
   //NEW PROJECT
-  code = "";
-  state = "";
+  codigo = "";
+  nombre = "";
+  estado = "";
+  tecnologia = "";
+  tipo = "";
   deploymentState = "";
-  deploymentDate = "";
-  projectManagers: string[] = [];
-  repository = "";
-
+  ultimoDespliegue = "";
+  primerDespliegue = "";
+  managers: string[] = [];
+  repositorio = "";
   pmTempName = "";
   idTemp = 0;
+
+  states = ['Activo','Inactivo','Terminado'];
+  technologies = ['Node'];
+  types = ['Web'];
 
   constructor(private router: Router,private proyectoService:ProyectoService) {
     //this.proyectoService.getProyectos().subscribe(proyectos=>this.projects$ = proyectos);
@@ -59,15 +65,59 @@ export class ProyectosComponent implements OnInit{
       this.projects$ = proyectos;
       this.projects$ = this.projects$.map((project:Project)=>{
         project.deploymentState = project.ultimoDespliegue?'Desplegado':'No Desplegado';
+        project.ultimoDespliegue = project.ultimoDespliegue?project.ultimoDespliegue:'---';
         return project;
+      });
+      this.projects$.sort((project1,project2)=>{
+        if(project1.codigo < project2.codigo){
+          return -1;
+        }else if(project1.codigo > project2.codigo){
+          return 1;
+        }else{
+          return 0;
+        }
+      });
+    });
+  }
+
+  createProyecto(newProject:ProjectApi){
+    this.proyectoService.addProyecto(newProject).subscribe(project=>{
+      this.projects$.push(project);
+      Swal.fire({
+        icon: 'success',
+        title: 'Genial',
+        text: 'Tu proyecto ha sido ingresado con éxito.',
+      });
+    });
+  }
+
+  updateProyecto(updatedProject:ProjectApi){
+    this.proyectoService.updateProyecto(updatedProject).subscribe(project=>{
+      Swal.fire({
+        icon: 'success',
+        title: 'Genial',
+        text: 'Tu proyecto ha sido editado con éxito.',
       })
     });
   }
 
-  createProyecto(){
-    //TODO: Finish
-    let nombre = 'nuevo';
-    this.proyectoService.addProyecto({nombre} as  Project).subscribe(project=>this.projects$.push(project));
+  deleteProyecto(project:Project){
+    this.proyectoService.deleteProyecto(project.id!).subscribe(result=>{
+      if(result){
+        Swal.fire(
+          'Proyecto eliminado!',
+          'El proyecto ha sido eliminado con éxito.',
+          'success'
+        )
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'No se encontró el proyecto con código ' + project.codigo,
+        });
+      }
+      this.getProyectos();
+    });
   }
 
   projectSearch(text: string): Project[] {
@@ -79,7 +129,7 @@ export class ProyectosComponent implements OnInit{
       return project.codigo.toLowerCase().includes(term)
         || project.estado.toLowerCase().includes(term)
         || project.deploymentState.toLowerCase().includes(term)
-        || project.ultimoDespliegue.includes(term)
+        || project.ultimoDespliegue!.includes(term)
     })
   }
 
@@ -88,7 +138,10 @@ export class ProyectosComponent implements OnInit{
   }
 
   newProyect() {
-    this.newProyectView = !this.newProyectView;
+    if(!this.editProjectView){
+      this.newProyectView = !this.newProyectView;
+      this.resetProjectData();
+    }
     this.editProjectView = false;
   }
 
@@ -100,112 +153,42 @@ export class ProyectosComponent implements OnInit{
         text: 'Debes ingresar por lo menos el nombre de un Project Manager',
       })
     } else {
-      this.projectManagers.push(this.pmTempName);
+      this.managers.push(this.pmTempName);
       this.pmTempName = "";
     }
   }
 
   deleteProjectManager(name: string) {
-    let index = this.projectManagers.indexOf(name);
+    let index = this.managers.indexOf(name);
     if (index > -1) {
-      this.projectManagers.splice(index, 1);
+      this.managers.splice(index, 1);
     }
   }
 
   saveProject(edit?: boolean) {
-
-    if (this.code == "" || this.state == "" || this.state == "" || this.deploymentState == "" || this.deploymentDate == "" || this.repository == "" || this.projectManagers.length == 0) {
+    if (this.codigo == "" || this.estado == "" || this.repositorio == "" || this.managers.length == 0) {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
         text: 'Debes llenar todos los campos en blanco',
       })
     } else {
+      let auxProject = {
+        nombre: this.nombre,
+        estado: this.estado,
+        codigo: this.codigo,
+        tecnologia:this.tecnologia,
+        tipo:this.tipo,
+        managers: this.managers,
+        repositorio: this.repositorio
+      }
       if (edit) {
-        let projectPayload: Project = {
-          id: this.idTemp,
-          nombre:'',
-          manager1:'',
-          manager2:'',
-          tecnologia:'',
-          tipo:'',
-          codigo: this.code,
-          estado: this.state,
-          deploymentState: this.deploymentState,
-          ultimoDespliegue: this.deploymentDate,
-          primerDespliegue:'',
-          servicesCost: [ //Se ingresaran los costos de manera estática ya que será parte de un servicio de aws
-            {
-              service: 'Code Deploy',
-              unitCost: '1$/despliegue',
-              dailyCost: 2,
-              previousMonthCost: 0
-            },
-            {
-              service: 'EC2',
-              unitCost: '0.8$/día',
-              dailyCost: 5,
-              previousMonthCost: 18
-            },
-          ],
-          repositorio: this.repository,
-          projectManagers: this.projectManagers
-        }
-
-        let indexToEdit = this.localProjects.findIndex((value) => { return value.id == this.idTemp });
-        if (indexToEdit > -1) {
-          this.localProjects.splice(indexToEdit, 1);
-          this.localProjects.push(projectPayload);
-
-          Swal.fire({
-            icon: 'success',
-            title: 'Genial',
-            text: 'Tu proyecto ha sido editado con éxito.',
-          })
-        } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'No se encontró el proyecto con código ' + this.code,
-          })
-        }
+        let updatedProject = auxProject as ProjectApi;
+        updatedProject.id = this.idTemp;       
+        this.updateProyecto(updatedProject)
       } else {
-        let projectPayload: Project = {
-          id: Math.random() * 10,
-          nombre:'',
-          manager1:'',
-          manager2:'',
-          tecnologia:'',
-          tipo:'',
-          codigo: this.code,
-          estado: this.state,
-          deploymentState: this.deploymentState,
-          ultimoDespliegue: this.deploymentDate,
-          primerDespliegue:'',
-          servicesCost: [ //Se ingresaran los costos de manera estática ya que será parte de un servicio de aws
-            {
-              service: 'Code Deploy',
-              unitCost: '1$/despliegue',
-              dailyCost: 2,
-              previousMonthCost: 0
-            },
-            {
-              service: 'EC2',
-              unitCost: '0.8$/día',
-              dailyCost: 5,
-              previousMonthCost: 18
-            },
-          ],
-          repositorio: this.repository,
-          projectManagers: this.projectManagers
-        }
-        this.localProjects.push(projectPayload);
-
-        Swal.fire({
-          icon: 'success',
-          title: 'Genial',
-          text: 'Tu proyecto ha sido ingresado con éxito.',
-        })
+        let newProject = auxProject as ProjectApi;
+        this.createProyecto(newProject);
 
       }
       this.newProyectView = false;
@@ -218,18 +201,17 @@ export class ProyectosComponent implements OnInit{
   editProject(project: Project) {
     this.editProjectView = !this.editProjectView;
 
-    this.idTemp = project.id;
-
-    this.code = project.codigo;
-    this.state = project.estado;
+    this.idTemp = project.id!;
+    this.nombre = project.nombre;
+    this.codigo = project.codigo;
+    this.estado = project.estado;
+    this.tecnologia = project.tecnologia;
+    this.tipo = project.tipo;
     this.deploymentState = project.deploymentState;
-    this.deploymentDate = project.ultimoDespliegue;
-    this.repository = project.repositorio;
-    this.projectManagers = project.projectManagers;
-  }
-
-  newProject(){
-    
+    this.primerDespliegue = project.primerDespliegue!;
+    this.ultimoDespliegue = project.ultimoDespliegue!;
+    this.repositorio = project.repositorio!;
+    this.managers = project.managers;
   }
 
   sleep(time: any) {
@@ -237,12 +219,17 @@ export class ProyectosComponent implements OnInit{
   }
 
   resetProjectData() {
-    this.code = "";
-    this.state = "";
+    this.codigo = "";
+    this.nombre = "";
+    this.estado = "";
+    this.tecnologia = "";
+    this.tipo = "";
     this.deploymentState = "";
-    this.deploymentDate = "";
-    this.repository = "";
-    this.projectManagers = [];
+    this.ultimoDespliegue = "";
+    this.primerDespliegue = "";
+    this.managers = [];
+    this.repositorio = "";
+    this.pmTempName = "";
     this.idTemp = 0;
   }
 
@@ -257,6 +244,8 @@ export class ProyectosComponent implements OnInit{
       confirmButtonText: 'Sí, eliminar'
     }).then((result) => {
       if (result.isConfirmed) {
+        this.deleteProyecto(project);
+        /*
         let indexToEdit = this.localProjects.findIndex((value) => { return value.id == project.id });
         if (indexToEdit > -1) {
           this.localProjects.splice(indexToEdit, 1);
@@ -273,11 +262,13 @@ export class ProyectosComponent implements OnInit{
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: 'No se encontró el proyecto con código ' + this.code,
+            text: 'No se encontró el proyecto con código ' + this.codigo,
           })
-        }
+        }*/
 
       }
     })
   }
+
+
 }

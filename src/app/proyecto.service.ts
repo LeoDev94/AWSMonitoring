@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { Project } from 'src/util/types';
+import { catchError, map } from 'rxjs/operators';
+import { Project,ProjectApi } from 'src/util/types';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +29,17 @@ export class ProyectoService {
     return this.http.get<Project>(url).pipe(map((resp:any)=>resp.data));
   }
 
-  addProyecto(proyecto:Project):Observable<Project>{
+  addProyecto(proyecto:ProjectApi):Observable<Project>{
     return this.http.post<Project>(this.proyectosUrl,proyecto,this.options).pipe(map((resp:any)=>resp.data));
+  }
+
+  updateProyecto(proyecto:ProjectApi):Observable<Project>{
+    const url =`${this.proyectosUrl}/${proyecto.id!}`;
+    return this.http.put<Project>(url,proyecto,this.options).pipe(map((resp:any)=>resp.data));
+  }
+
+  deleteProyecto(id:number):Observable<boolean>{
+    const url =`${this.proyectosUrl}/${id}`;
+    return this.http.delete<boolean>(url,this.options).pipe(map((resp:any)=>resp.data))
   }
 }

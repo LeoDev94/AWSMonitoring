@@ -9,11 +9,9 @@ export const PROJECTS: Project[] = [
         deploymentState: 'No Desplegado',
         ultimoDespliegue: '02/02/2019',
         primerDespliegue:'',
-        manager1:'',
-        manager2:'',
         tecnologia:'',
         tipo:'',
-        projectManagers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
+        managers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
         repositorio: 'https://git.com',
         servicesCost: [
             {
@@ -38,11 +36,9 @@ export const PROJECTS: Project[] = [
         deploymentState: 'No Desplegado',
         ultimoDespliegue: '02/02/2019',
         primerDespliegue:'',
-        manager1:'',
-        manager2:'',
         tecnologia:'',
         tipo:'',
-        projectManagers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
+        managers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
         repositorio: 'https://git.com',
         servicesCost: [
             {
@@ -67,11 +63,9 @@ export const PROJECTS: Project[] = [
         deploymentState: 'No Desplegado',
         ultimoDespliegue: '02/02/2019',
         primerDespliegue:'',
-        manager1:'',
-        manager2:'',
         tecnologia:'',
         tipo:'',
-        projectManagers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
+        managers: ['Jefe de Proyecto 1', 'Jefe de Proyecto 2'],
         repositorio: 'https://git.com',
         servicesCost: [
             {
