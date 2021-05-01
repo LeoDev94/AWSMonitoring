@@ -55,11 +55,10 @@
 
                         <div ngbDropdown class="d-inline-block" style="float: left;margin: 100px 70px 100px 70px;">
                             <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
-                                class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>Métricas</button>
+                                class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>{{metrica}}</button>
+                                
                             <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                                <button ngbDropdownItem>CPU Utilization</button>
-                                <button ngbDropdownItem>Network</button>
-                                <button ngbDropdownItem>Storage</button>
+                                <button ngbDropdownItem *ngFor="let met of listaMetricas" (click)="selectMetrica(met)">{{met}}</button>
                             </div>
                         </div>
 

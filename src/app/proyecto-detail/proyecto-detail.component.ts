@@ -21,19 +21,11 @@ export class ProyectoDetailComponent implements OnInit {
   faCodeBranch = faCodeBranch;
   faArchive = faArchive;
   faChevronLeft = faChevronLeft;
-
+  listaMetricas:string[]=[];
+  metrica:string="Métricas";
   options: any;
 
   constructor(private route: ActivatedRoute, private router: Router,private proyectoService: ProyectoService) {
-    /*let projects = PROJECTS.filter((proj) => {
-      return proj.id.toString() == id;
-    })
-
-    if (projects.length == 0) {
-      this.noProject = true;
-    } else {
-      this.project = projects[0];
-    }*/
   }
 
   getProyecto(){
@@ -47,30 +39,47 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
+  getListaMetricas(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.getMetricas(nid).subscribe(met=>this.listaMetricas = met);
+    }
+  }
+
+  getMetricData(){
+    if(this.listaMetricas.includes(this.metrica)){
+      const id = this.route.snapshot.paramMap.get('id');
+      if(id){
+        const nid = +id;
+        this.proyectoService.getMetricData(nid,this.metrica).subscribe(dat=>{
+          const xData = dat[0].Timestamps;
+          const yData = dat[0].Values;
+          this.setGraph(xData,yData);
+        });
+      }
+    }
+  }
+
+  selectMetrica(met:string){
+    this.metrica=met;
+    this.getMetricData();
+  }
+
   goBack() {
     this.router.navigate(['/proyectos'])
   }
 
-  ngOnInit(): void {
-    this.getProyecto();
-    const xAxisData = [];
-    const data1 = [];
-    const data2 = [];
-
-    for (let i = 0; i < 100; i++) {
-      xAxisData.push('category' + i);
-      data1.push((Math.sin(i / 5) * (i / 5 - 10) + i / 6) * 5);
-      data2.push((Math.cos(i / 5) * (i / 5 - 10) + i / 6) * 5);
-    }
-
+  setGraph(xAxis:any[],yAxis:any[]){
+    const met = this.metrica!='Métricas'?this.metrica:'';
     this.options = {
       legend: {
-        data: ['CodeDeploy', 'EC2'],
+        data: [met],
         align: 'left',
       },
       tooltip: {},
       xAxis: {
-        data: xAxisData,
+        data: xAxis,
         silent: false,
         splitLine: {
           show: false,
@@ -79,21 +88,21 @@ export class ProyectoDetailComponent implements OnInit {
       yAxis: {},
       series: [
         {
-          name: 'CodeDeploy',
-          type: 'bar',
-          data: data1,
+          name: met,
+          type: 'line',
+          data: yAxis,
           animationDelay: (idx: any) => idx * 10,
-        },
-        {
-          name: 'EC2',
-          type: 'bar',
-          data: data2,
-          animationDelay: (idx: any) => idx * 10 + 100,
-        },
+        }
       ],
       animationEasing: 'elasticOut',
       animationDelayUpdate: (idx: any) => idx * 5,
     };
+  }
+
+  ngOnInit(): void {
+    this.getProyecto();
+    this.getListaMetricas();
+    this.setGraph([],[]);
   }
 
 }

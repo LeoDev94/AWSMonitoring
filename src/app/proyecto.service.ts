@@ -42,4 +42,14 @@ export class ProyectoService {
     const url =`${this.proyectosUrl}/${id}`;
     return this.http.delete<boolean>(url,this.options).pipe(map((resp:any)=>resp.data))
   }
+
+  getMetricas(id:number){
+    const url =`${this.proyectosUrl}/${id}/metricas`;
+    return this.http.get(url).pipe(map((resp:any)=>resp.data));
+  }
+
+  getMetricData(id:number,metric:string){
+    const url =`${this.proyectosUrl}/${id}/metricas/${metric}`;
+    return this.http.get(url).pipe(map((resp:any)=>resp.data));
+  }
 }
