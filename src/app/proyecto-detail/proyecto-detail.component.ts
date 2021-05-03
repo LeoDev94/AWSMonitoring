@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PROJECTS } from 'src/util/constants';
-import { Project } from 'src/util/types';
+import { Project,Logs } from 'src/util/types';
 import { faUsers, faRocket, faCodeBranch, faArchive, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { ProyectoService } from '../proyecto.service';
 import { number } from 'echarts';
@@ -24,7 +24,7 @@ export class ProyectoDetailComponent implements OnInit {
   listaMetricas:string[]=[];
   metrica:string="Métricas";
   options: any;
-
+  msjLogs:Logs[] =[];
   constructor(private route: ActivatedRoute, private router: Router,private proyectoService: ProyectoService) {
   }
 
@@ -58,6 +58,16 @@ export class ProyectoDetailComponent implements OnInit {
           this.setGraph(xData,yData);
         });
       }
+    }
+  }
+
+  getLogs(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id
+      this.proyectoService.getLogs(nid).subscribe((dat)=>{
+        this.msjLogs = dat;
+      })
     }
   }
 
@@ -102,6 +112,7 @@ export class ProyectoDetailComponent implements OnInit {
   ngOnInit(): void {
     this.getProyecto();
     this.getListaMetricas();
+    this.getLogs();
     this.setGraph([],[]);
   }
 

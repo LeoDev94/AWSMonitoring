@@ -67,6 +67,31 @@
                 </ng-template>
             </ng-container>
             <ng-container ngbNavItem>
+                <a ngbNavLink>Logs</a>
+                <ng-template ngbNavContent>
+                    <div style="margin: 30px;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Hora Incidencia</th>
+                                    <th scope="col">Mensaje</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="cursor: pointer;" *ngFor="let event of msjLogs; index as i">
+                                    <td>
+                                        <ngb-highlight [result]="event.horaOcurrencia.toString()"></ngb-highlight>
+                                    </td>
+                                    <td>
+                                        <ngb-highlight [result]="event.mensaje"></ngb-highlight>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </ng-template>
+            </ng-container>
+            <ng-container ngbNavItem>
                 <a ngbNavLink>Costos</a>
                 <ng-template ngbNavContent>
                     <div style="margin: 30px;">
@@ -107,7 +132,7 @@
     </div>
     <div *ngIf="noProject" style="text-align: center;">
         <h1>
-            No se encontró el projecto.
+            No se encontró el proyecto.
         </h1>
     </div>
 </div>
