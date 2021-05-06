@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PROJECTS } from 'src/util/constants';
-import { Project,Logs } from 'src/util/types';
+import { Project,Logs, Services } from 'src/util/types';
 import { faUsers, faRocket, faCodeBranch, faArchive, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { ProyectoService } from '../proyecto.service';
 import { number } from 'echarts';
@@ -25,6 +25,8 @@ export class ProyectoDetailComponent implements OnInit {
   metrica:string="Métricas";
   options: any;
   msjLogs:Logs[] =[];
+  precios:Services[]=[];
+  timeframe:string='lastHora';
   constructor(private route: ActivatedRoute, private router: Router,private proyectoService: ProyectoService) {
   }
 
@@ -52,7 +54,7 @@ export class ProyectoDetailComponent implements OnInit {
       const id = this.route.snapshot.paramMap.get('id');
       if(id){
         const nid = +id;
-        this.proyectoService.getMetricData(nid,this.metrica).subscribe(dat=>{
+        this.proyectoService.getMetricData(nid,this.metrica,this.timeframe).subscribe(dat=>{
           const xData = dat[0].Timestamps;
           const yData = dat[0].Values;
           this.setGraph(xData,yData);
@@ -68,6 +70,16 @@ export class ProyectoDetailComponent implements OnInit {
       this.proyectoService.getLogs(nid).subscribe((dat)=>{
         this.msjLogs = dat;
       })
+    }
+  }
+
+  getPrecios(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.getPrecios(nid).subscribe((dat)=>{
+        this.precios=dat;
+      });
     }
   }
 
@@ -109,11 +121,17 @@ export class ProyectoDetailComponent implements OnInit {
     };
   }
 
+  changeTimeFrame(tf:string){
+    this.timeframe = tf;
+    this.getMetricData();
+  }
+
   ngOnInit(): void {
     this.getProyecto();
     this.getListaMetricas();
     this.getLogs();
     this.setGraph([],[]);
+    this.getPrecios();
   }
 
 }

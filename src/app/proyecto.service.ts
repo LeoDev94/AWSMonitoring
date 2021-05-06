@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Logs, Project,ProjectApi } from 'src/util/types';
+import { Logs, Project,ProjectApi, Services } from 'src/util/types';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,7 @@ import { Logs, Project,ProjectApi } from 'src/util/types';
 export class ProyectoService {
 
   proyectosUrl = "http://localhost:3000/proyectos";
+  serviciosurl = "http://localhost:3000/servicios"
   options = {
     headers: {
       'Content-Type': 'application/json',
@@ -48,13 +49,18 @@ export class ProyectoService {
     return this.http.get(url).pipe(map((resp:any)=>resp.data));
   }
 
-  getMetricData(id:number,metric:string){
-    const url =`${this.proyectosUrl}/${id}/metricas/${metric}`;
+  getMetricData(id:number,metric:string,timeframe:string){
+    const url =`${this.proyectosUrl}/${id}/metricas/${metric}?timeframe=${timeframe}`;
     return this.http.get(url).pipe(map((resp:any)=>resp.data));
   }
 
   getLogs(id:number):Observable<Logs[]>{
     const url =`${this.proyectosUrl}/${id}/logs`;
     return this.http.get<Logs[]>(url,this.options).pipe(map((resp:any)=>resp.data));
+  }
+
+  getPrecios(id:number):Observable<Services[]>{
+    const url =`${this.serviciosurl}/proyecto/${id}/costos`;
+    return this.http.get<Services[]>(url,this.options).pipe(map((resp:any)=>resp.data));
   }
 }

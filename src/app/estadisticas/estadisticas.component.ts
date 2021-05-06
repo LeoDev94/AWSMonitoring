@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Project } from 'src/util/types';
+import { ProyectoService } from '../proyecto.service';
 
 
 var datos = [
@@ -18,6 +20,7 @@ var datos = [
   styleUrls: ['./estadisticas.component.css']
 })
 export class EstadisticasComponent implements OnInit {
+  proyectos:Project[]=[];
   datos:any[] = [];
   view:[number,number] = [700, 400];
   gradient: boolean = true;
@@ -28,11 +31,22 @@ export class EstadisticasComponent implements OnInit {
   colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
-  constructor() { 
+  constructor(private proyectoService:ProyectoService) { 
     Object.assign(this,{datos});
   }
 
   ngOnInit(): void {
+    this.getProyectos();
   }
 
+  getProyectos(){
+    this.proyectoService.getProyectos().subscribe((dat)=>{
+      this.proyectos=dat;
+      this.proyectos = this.proyectos.map((project:Project)=>{
+        project.deploymentState = project.ultimoDespliegue?'Desplegado':'No Desplegado';
+        project.ultimoDespliegue = project.ultimoDespliegue?project.ultimoDespliegue:'---';
+        return project;
+      });
+    });
+  }
 }

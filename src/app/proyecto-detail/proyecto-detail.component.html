@@ -61,6 +61,14 @@
                                 <button ngbDropdownItem *ngFor="let met of listaMetricas" (click)="selectMetrica(met)">{{met}}</button>
                             </div>
                         </div>
+                        <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                class="btn btn-outline-primary" id="btnHoras" (click)="changeTimeFrame('lastHora')">Ultima Hora</button>
+                        <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                class="btn btn-outline-primary" id="btnDias" (click)="changeTimeFrame('lastDia')">Ultimo Día</button>
+                        <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                class="btn btn-outline-primary" id="btnSemana" (click)="changeTimeFrame('lastSemana')">Ultima Semana</button>
+                        <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                class="btn btn-outline-primary" id="btnMes" (click)="changeTimeFrame('lastMes')">Ultimo Mes</button>
 
                         <div style="width: 60%; float: left" echarts [options]="options" class="demo-chart"></div>
                     </div>
@@ -100,25 +108,15 @@
                                 <tr>
                                     <th scope="col">Servicio</th>
                                     <th scope="col">Costo unitario</th>
-                                    <th scope="col">Costo al día</th>
-                                    <th scope="col">Costo mes anterior</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="cursor: pointer;" *ngFor="let cost of project?.servicesCost; index as i">
+                                <tr style="cursor: pointer;" *ngFor="let cost of precios; index as i">
                                     <td>
-                                        <ngb-highlight [result]="cost.service"></ngb-highlight>
+                                        <ngb-highlight [result]="cost.nombre"></ngb-highlight>
                                     </td>
                                     <td>
-                                        <ngb-highlight [result]="cost.unitCost"></ngb-highlight>
-                                    </td>
-                                    <td>
-                                        <ngb-highlight [result]="cost.dailyCost.toString() + '$'">
-                                        </ngb-highlight>
-                                    </td>
-                                    <td>
-                                        <ngb-highlight [result]="cost.previousMonthCost.toString() + '$'">
-                                        </ngb-highlight>
+                                        <ngb-highlight [result]="(cost.usd|number:'1.0-5')+ '$ /' + cost.unidad"></ngb-highlight>
                                     </td>
                                 </tr>
                             </tbody>
