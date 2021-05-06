@@ -3,4 +3,5 @@ export interface Services{
     unidad:string;
     description:string;
     usd:number;
+    monthAprox:number;
 }

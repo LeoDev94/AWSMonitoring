@@ -79,6 +79,18 @@ export class ProyectoDetailComponent implements OnInit {
       const nid = +id;
       this.proyectoService.getPrecios(nid).subscribe((dat)=>{
         this.precios=dat;
+        this.precios = this.precios.map(dat=>{
+          if(dat.unidad === 'OnPremUpdates'){
+            dat.usd = 0;
+            dat.unidad = 'EC2Updates'
+          }
+          if(dat.unidad==='Hrs'||dat.unidad==='GB-Mo'){
+            dat.monthAprox = dat.usd*24*30;
+          }else{
+            dat.monthAprox = dat.usd;
+          }
+          return dat;
+        })
       });
     }
   }
@@ -124,6 +136,15 @@ export class ProyectoDetailComponent implements OnInit {
   changeTimeFrame(tf:string){
     this.timeframe = tf;
     this.getMetricData();
+  }
+
+  sumMonth(){
+    var suma:number = 0;
+    this.precios.forEach(pre=>{
+      suma += +pre.monthAprox;
+    });
+    console.log(suma);
+    return suma;
   }
 
   ngOnInit(): void {
