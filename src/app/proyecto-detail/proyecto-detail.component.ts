@@ -5,7 +5,7 @@ import { Project,Logs, Services } from 'src/util/types';
 import { faUsers, faRocket, faCodeBranch, faArchive, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { ProyectoService } from '../proyecto.service';
 import { number } from 'echarts';
-
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-proyecto-detail',
@@ -36,6 +36,7 @@ export class ProyectoDetailComponent implements OnInit {
       const nid = +id;
       this.proyectoService.getProyecto(nid).subscribe(proyect=>{
         this.project=proyect;
+        this.project.deploymentState = proyect.ultimoDespliegue?'Desplegado':'No Desplegado';
         this.project.ultimoDespliegue = this.project.ultimoDespliegue?this.project.ultimoDespliegue:'---';
       });
     }
@@ -95,6 +96,22 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
+  desplegarProyecto(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.desplegarProyecto(nid).subscribe(dat=>{
+        Swal.fire(
+          'Proyecto desplegado!',
+          'El proyecto ha sido desplegado con éxito.',
+          'success'
+        );
+        this.incializarDatos();
+        
+      });
+    }
+  }
+
   selectMetrica(met:string){
     this.metrica=met;
     this.getMetricData();
@@ -147,12 +164,16 @@ export class ProyectoDetailComponent implements OnInit {
     return suma;
   }
 
-  ngOnInit(): void {
+  incializarDatos(){
     this.getProyecto();
     this.getListaMetricas();
     this.getLogs();
     this.setGraph([],[]);
     this.getPrecios();
+  }
+
+  ngOnInit(): void {
+    this.incializarDatos();
   }
 
 }

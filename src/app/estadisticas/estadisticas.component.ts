@@ -3,7 +3,7 @@ import { Project } from 'src/util/types';
 import { ProyectoService } from '../proyecto.service';
 
 
-var datos = [
+/*var datos = [
   {
     "name": "Desplegados",
     "value": 8940000
@@ -12,7 +12,7 @@ var datos = [
     "name": "No desplegados",
     "value": 5000000
   }
-];
+];*/
 
 @Component({
   selector: 'app-estadisticas',
@@ -32,21 +32,29 @@ export class EstadisticasComponent implements OnInit {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
   constructor(private proyectoService:ProyectoService) { 
-    Object.assign(this,{datos});
+    //Object.assign(this,{datos});
   }
 
   ngOnInit(): void {
-    this.getProyectos();
+    this.getDesplegados();
+    
   }
 
-  getProyectos(){
-    this.proyectoService.getProyectos().subscribe((dat)=>{
-      this.proyectos=dat;
-      this.proyectos = this.proyectos.map((project:Project)=>{
-        project.deploymentState = project.ultimoDespliegue?'Desplegado':'No Desplegado';
-        project.ultimoDespliegue = project.ultimoDespliegue?project.ultimoDespliegue:'---';
-        return project;
-      });
+  getDesplegados(){
+    this.proyectoService.getDesplegados().subscribe(dat=>{
+      this.datos = [{
+          name:"Desplegados",
+          value: dat.desplegados
+        },{
+          name:"No Desplegaods",
+          value:dat.no_desplegados
+        }
+      ];
     });
   }
+
+  
+
+ 
+
 }

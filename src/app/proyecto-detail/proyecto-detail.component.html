@@ -49,6 +49,10 @@
                                         Repositorio
                                     </p>
                                     <p style="font-size: 14px; color: rgb(9, 8, 102);">{{ project?.repositorio }}</p>
+                                    <label *ngIf="project?.deploymentState=='No Desplegado'" style="margin-left: 50px; background-color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                    class="btn-primary" (click)="desplegarProyecto()" ngbButtonLabel>
+                                    Desplegar
+                                    </label>
                                 </div>
                             </div>
                         </div>
