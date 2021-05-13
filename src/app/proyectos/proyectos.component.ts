@@ -166,7 +166,7 @@ export class ProyectosComponent implements OnInit{
   }
 
   saveProject(edit?: boolean) {
-    if (this.codigo == "" || this.estado == "" || this.repositorio == "" || this.managers.length == 0) {
+    if (this.codigo == "" || this.estado == "" || this.repositorio == "" || this.managers.length == 0||this.tecnologia==""||this.tipo=="") {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -231,6 +231,7 @@ export class ProyectosComponent implements OnInit{
     this.repositorio = "";
     this.pmTempName = "";
     this.idTemp = 0;
+    this.getProyectos();
   }
 
   deleteProject(project: Project) {

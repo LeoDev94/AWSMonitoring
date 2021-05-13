@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { Project } from 'src/util/types';
+import { ProyectoService } from '../proyecto.service';
 
 
-var datos = [
+/*var datos = [
   {
     "name": "Desplegados",
     "value": 8940000
@@ -10,7 +12,7 @@ var datos = [
     "name": "No desplegados",
     "value": 5000000
   }
-];
+];*/
 
 @Component({
   selector: 'app-estadisticas',
@@ -18,6 +20,7 @@ var datos = [
   styleUrls: ['./estadisticas.component.css']
 })
 export class EstadisticasComponent implements OnInit {
+  proyectos:Project[]=[];
   datos:any[] = [];
   view:[number,number] = [700, 400];
   gradient: boolean = true;
@@ -28,11 +31,30 @@ export class EstadisticasComponent implements OnInit {
   colorScheme = {
     domain: ['#5AA454', '#A10A28', '#C7B42C', '#AAAAAA']
   };
-  constructor() { 
-    Object.assign(this,{datos});
+  constructor(private proyectoService:ProyectoService) { 
+    //Object.assign(this,{datos});
   }
 
   ngOnInit(): void {
+    this.getDesplegados();
+    
   }
+
+  getDesplegados(){
+    this.proyectoService.getDesplegados().subscribe(dat=>{
+      this.datos = [{
+          name:"Desplegados",
+          value: dat.desplegados
+        },{
+          name:"No Desplegaods",
+          value:dat.no_desplegados
+        }
+      ];
+    });
+  }
+
+  
+
+ 
 
 }

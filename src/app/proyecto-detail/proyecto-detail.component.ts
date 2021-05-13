@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PROJECTS } from 'src/util/constants';
-import { Project,Logs } from 'src/util/types';
+import { Project,Logs, Services } from 'src/util/types';
 import { faUsers, faRocket, faCodeBranch, faArchive, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { ProyectoService } from '../proyecto.service';
 import { number } from 'echarts';
-
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-proyecto-detail',
@@ -25,6 +25,8 @@ export class ProyectoDetailComponent implements OnInit {
   metrica:string="Métricas";
   options: any;
   msjLogs:Logs[] =[];
+  precios:Services[]=[];
+  timeframe:string='lastHora';
   constructor(private route: ActivatedRoute, private router: Router,private proyectoService: ProyectoService) {
   }
 
@@ -34,6 +36,7 @@ export class ProyectoDetailComponent implements OnInit {
       const nid = +id;
       this.proyectoService.getProyecto(nid).subscribe(proyect=>{
         this.project=proyect;
+        this.project.deploymentState = proyect.ultimoDespliegue?'Desplegado':'No Desplegado';
         this.project.ultimoDespliegue = this.project.ultimoDespliegue?this.project.ultimoDespliegue:'---';
       });
     }
@@ -52,7 +55,7 @@ export class ProyectoDetailComponent implements OnInit {
       const id = this.route.snapshot.paramMap.get('id');
       if(id){
         const nid = +id;
-        this.proyectoService.getMetricData(nid,this.metrica).subscribe(dat=>{
+        this.proyectoService.getMetricData(nid,this.metrica,this.timeframe).subscribe(dat=>{
           const xData = dat[0].Timestamps;
           const yData = dat[0].Values;
           this.setGraph(xData,yData);
@@ -68,6 +71,44 @@ export class ProyectoDetailComponent implements OnInit {
       this.proyectoService.getLogs(nid).subscribe((dat)=>{
         this.msjLogs = dat;
       })
+    }
+  }
+
+  getPrecios(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.getPrecios(nid).subscribe((dat)=>{
+        this.precios=dat;
+        this.precios = this.precios.map(dat=>{
+          if(dat.unidad === 'OnPremUpdates'){
+            dat.usd = 0;
+            dat.unidad = 'EC2Updates'
+          }
+          if(dat.unidad==='Hrs'||dat.unidad==='GB-Mo'){
+            dat.monthAprox = dat.usd*24*30;
+          }else{
+            dat.monthAprox = dat.usd;
+          }
+          return dat;
+        })
+      });
+    }
+  }
+
+  desplegarProyecto(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.desplegarProyecto(nid).subscribe(dat=>{
+        Swal.fire(
+          'Proyecto desplegado!',
+          'El proyecto ha sido desplegado con éxito.',
+          'success'
+        );
+        this.incializarDatos();
+        
+      });
     }
   }
 
@@ -109,11 +150,30 @@ export class ProyectoDetailComponent implements OnInit {
     };
   }
 
-  ngOnInit(): void {
+  changeTimeFrame(tf:string){
+    this.timeframe = tf;
+    this.getMetricData();
+  }
+
+  sumMonth(){
+    var suma:number = 0;
+    this.precios.forEach(pre=>{
+      suma += +pre.monthAprox;
+    });
+    console.log(suma);
+    return suma;
+  }
+
+  incializarDatos(){
     this.getProyecto();
     this.getListaMetricas();
     this.getLogs();
     this.setGraph([],[]);
+    this.getPrecios();
+  }
+
+  ngOnInit(): void {
+    this.incializarDatos();
   }
 
 }
