@@ -26,6 +26,7 @@ export class ProyectosComponent implements OnInit{
   faTrashAlt = faTrashAlt;
   faEdit = faEdit;
 
+  esValido = true;
   newProyectView = false;
   editProjectView = false;
 
@@ -88,6 +89,7 @@ export class ProyectosComponent implements OnInit{
         title: 'Genial',
         text: 'Tu proyecto ha sido ingresado con éxito.',
       });
+      this.resetProjectData();
     });
   }
 
@@ -98,6 +100,7 @@ export class ProyectosComponent implements OnInit{
         title: 'Genial',
         text: 'Tu proyecto ha sido editado con éxito.',
       })
+      this.resetProjectData();
     });
   }
 
@@ -171,7 +174,8 @@ export class ProyectosComponent implements OnInit{
         icon: 'error',
         title: 'Oops...',
         text: 'Debes llenar todos los campos en blanco',
-      })
+      });
+      this.esValido = false;
     } else {
       let auxProject = {
         nombre: this.nombre,
@@ -193,7 +197,6 @@ export class ProyectosComponent implements OnInit{
       }
       this.newProyectView = false;
       this.editProjectView = false;
-      this.resetProjectData();
     }
 
   }
@@ -231,6 +234,7 @@ export class ProyectosComponent implements OnInit{
     this.repositorio = "";
     this.pmTempName = "";
     this.idTemp = 0;
+    this.esValido = true;
     this.getProyectos();
   }
 
@@ -268,7 +272,8 @@ export class ProyectosComponent implements OnInit{
         }*/
 
       }
-    })
+    });
+    this.resetProjectData();
   }
 
 

@@ -10,7 +10,8 @@ import { Logs, Project,ProjectApi, Services } from 'src/util/types';
 export class ProyectoService {
 
   proyectosUrl = "http://localhost:3000/proyectos";
-  serviciosurl = "http://localhost:3000/servicios"
+  serviciosurl = "http://localhost:3000/servicios";
+  repositorioUrl = "http://localhost:3000/repositorios";
   options = {
     headers: {
       'Content-Type': 'application/json',
@@ -73,4 +74,6 @@ export class ProyectoService {
     const url =`${this.proyectosUrl}/desplegar/${id}`;
     return this.http.put(url,this.options).pipe(map((resp:any)=>{resp.data}));
   }
+
+
 }
