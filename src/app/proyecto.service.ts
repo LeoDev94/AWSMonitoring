@@ -9,8 +9,8 @@ import { Logs, Project,ProjectApi, Services } from 'src/util/types';
 })
 export class ProyectoService {
 
-  proyectosUrl = "http://localhost:3000/proyectos";
-  serviciosurl = "http://localhost:3000/servicios"
+  proyectosUrl = "http://54.90.244.233:3000/proyectos";
+  serviciosurl = "http://54.90.244.233:3000/servicios"
   options = {
     headers: {
       'Content-Type': 'application/json',
