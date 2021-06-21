@@ -4,7 +4,13 @@ interface ServiceCost {
     dailyCost: number;
     previousMonthCost: number;
 }
-
+interface RepositorioApi{
+    id:number|null;
+    nombre:string;
+    url:string;
+    ultimoDespliegue:string|null;
+    primerDespliegue:string|null;
+}
 export interface Project {
     id: number|null,
     nombre: string,
@@ -16,6 +22,6 @@ export interface Project {
     tecnologia:string;
     tipo:string;
     managers: string[];
-    repositorio: string|null;
+    repositorios: RepositorioApi[];
     servicesCost: ServiceCost[];
 }

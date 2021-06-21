@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PROJECTS } from 'src/util/constants';
-import { Project,Logs, Services } from 'src/util/types';
+//import { PROJECTS } from 'src/util/constants';
+import { Project,Logs, Services,ProjectApi, RepositorioApi } from 'src/util/types';
 import { faUsers, faRocket, faCodeBranch, faArchive, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { ProyectoService } from '../proyecto.service';
 import { number } from 'echarts';
@@ -21,12 +21,14 @@ export class ProyectoDetailComponent implements OnInit {
   faCodeBranch = faCodeBranch;
   faArchive = faArchive;
   faChevronLeft = faChevronLeft;
-  listaMetricas:string[]=[];
+  listaMetricas:any[]=[];
   metrica:string="Métricas";
   options: any;
   msjLogs:Logs[] =[];
   precios:Services[]=[];
   timeframe:string='lastHora';
+  repos:RepositorioApi[]=[];
+
   constructor(private route: ActivatedRoute, private router: Router,private proyectoService: ProyectoService) {
   }
 
@@ -42,6 +44,16 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
+  getRepos(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.getRepos(nid).subscribe(reps=>{
+        this.repos = reps;
+      });
+    }
+  }
+
   getListaMetricas(){
     const id = this.route.snapshot.paramMap.get('id');
     if(id){
@@ -50,9 +62,9 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
-  getMetricData(){
-    if(this.listaMetricas.includes(this.metrica)){
-      const id = this.route.snapshot.paramMap.get('id');
+  getMetricData(lista:any[],id:number){
+    if(lista.includes(this.metrica)){
+      //const id = this.route.snapshot.paramMap.get('id');
       if(id){
         const nid = +id;
         this.proyectoService.getMetricData(nid,this.metrica,this.timeframe).subscribe(dat=>{
@@ -64,8 +76,8 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
-  getLogs(){
-    const id = this.route.snapshot.paramMap.get('id');
+  getLogs(id:number){
+    //const id = this.route.snapshot.paramMap.get('id');
     if(id){
       const nid = +id
       this.proyectoService.getLogs(nid).subscribe((dat)=>{
@@ -112,9 +124,9 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
-  selectMetrica(met:string){
+  selectMetrica(lista:any[],met:string,id:number){
     this.metrica=met;
-    this.getMetricData();
+    this.getMetricData(lista,id);
   }
 
   goBack() {
@@ -152,7 +164,7 @@ export class ProyectoDetailComponent implements OnInit {
 
   changeTimeFrame(tf:string){
     this.timeframe = tf;
-    this.getMetricData();
+    //this.getMetricData();
   }
 
   sumMonth(){
@@ -167,9 +179,12 @@ export class ProyectoDetailComponent implements OnInit {
   incializarDatos(){
     this.getProyecto();
     this.getListaMetricas();
-    this.getLogs();
+    if(this.repos.length>0){
+      this.getLogs(this.repos[0].id!);
+    }
     this.setGraph([],[]);
     this.getPrecios();
+    this.getRepos();
   }
 
   ngOnInit(): void {
