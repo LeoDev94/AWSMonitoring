@@ -9,14 +9,14 @@ import { Logs, Project,ProjectApi, Services } from 'src/util/types';
 })
 export class ProyectoService {
 
-  proyectosUrl = "http://localhost:3000/proyectos";
-  serviciosurl = "http://localhost:3000/servicios";
-  repositorioUrl = "http://localhost:3000/repositorios";
+  proyectosUrl = "http://54.242.143.196:3000/proyectos";
+  serviciosurl = "http://54.242.143.196:3000/servicios";
+  repositorioUrl = "http://54.242.143.196:3000/repositorios";
   options = {
     headers: {
       'Content-Type': 'application/json',
     'Accept': 'application/json',
-    'Access-Control-Allow-Origin': 'http://localhost:3000'
+    'Access-Control-Allow-Origin': 'http://54.242.143.196:3000'
     }
   };
 
