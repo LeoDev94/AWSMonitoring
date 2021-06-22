@@ -25,7 +25,7 @@ export class ProyectoDetailComponent implements OnInit {
   metrica:string="Métricas";
   options: any;
   msjLogs:Logs[] =[];
-  precios:Services[]=[];
+  precios:any[]=[];
   timeframe:string='lastHora';
   repos:RepositorioApi[]=[];
 
@@ -50,6 +50,9 @@ export class ProyectoDetailComponent implements OnInit {
       const nid = +id;
       this.proyectoService.getRepos(nid).subscribe(reps=>{
         this.repos = reps;
+        if(this.repos.length>0){
+          this.getLogs(this.repos[0].id!);
+        }
       });
     }
   }
@@ -60,6 +63,14 @@ export class ProyectoDetailComponent implements OnInit {
       const nid = +id;
       this.proyectoService.getMetricas(nid).subscribe(met=>this.listaMetricas = met);
     }
+  }
+
+  getName(id:number){
+    let rep = this.repos.find(()=>{return{id:id}});
+    if(rep){
+      return rep.nombre;
+    }
+    return "";
   }
 
   getMetricData(lista:any[],id:number){
@@ -80,6 +91,7 @@ export class ProyectoDetailComponent implements OnInit {
     //const id = this.route.snapshot.paramMap.get('id');
     if(id){
       const nid = +id
+      
       this.proyectoService.getLogs(nid).subscribe((dat)=>{
         this.msjLogs = dat;
       })
@@ -90,20 +102,22 @@ export class ProyectoDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if(id){
       const nid = +id;
-      this.proyectoService.getPrecios(nid).subscribe((dat)=>{
-        this.precios=dat;
-        this.precios = this.precios.map(dat=>{
-          if(dat.unidad === 'OnPremUpdates'){
-            dat.usd = 0;
-            dat.unidad = 'EC2Updates'
-          }
-          if(dat.unidad==='Hrs'||dat.unidad==='GB-Mo'){
-            dat.monthAprox = dat.usd*24*30;
-          }else{
-            dat.monthAprox = dat.usd;
-          }
-          return dat;
-        })
+      this.proyectoService.getPrecios(nid).subscribe((data)=>{
+        this.precios=data;
+        for(let dato of this.precios){
+          dato.costos = dato.costos.map((dat:any)=>{
+            if(dat.unidad === 'OnPremUpdates'){
+              dat.usd = 0;
+              dat.unidad = 'EC2Updates'
+            }
+            if(dat.unidad==='Hrs'||dat.unidad==='GB-Mo'){
+              dat.monthAprox = dat.usd*24*30;
+            }else{
+              dat.monthAprox = dat.usd;
+            }
+            return dat;
+          });
+        }
       });
     }
   }
@@ -169,22 +183,22 @@ export class ProyectoDetailComponent implements OnInit {
 
   sumMonth(){
     var suma:number = 0;
-    this.precios.forEach(pre=>{
-      suma += +pre.monthAprox;
-    });
-    console.log(suma);
+    for(let pre of this.precios){
+      for(let cost of pre.costos){
+        suma+= +cost.monthAprox;
+      }
+    }
     return suma;
   }
 
   incializarDatos(){
     this.getProyecto();
     this.getListaMetricas();
-    if(this.repos.length>0){
-      this.getLogs(this.repos[0].id!);
-    }
+   
     this.setGraph([],[]);
     this.getPrecios();
     this.getRepos();
+   
   }
 
   ngOnInit(): void {

@@ -91,7 +91,7 @@
                     <div style="margin: 30px;">
                     <nav ngbNav #nav="ngbNav" class="nav-tabs">
                         <ng-container *ngFor="let rep of repos" ngbNavItem>
-                            <a ngbNavLink>{{rep.nombre}}</a>
+                            <a ngbNavLink (click)="getLogs(rep.id!)">{{rep.nombre}}</a>
                         <ng-template ngbNavContent>
                             <div style="margin: 30px;">
                                 <table class="table table-striped">
@@ -134,7 +134,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="cursor: pointer;" *ngFor="let cost of precios; index as i">
+                                <ng-template ngFor let-pre [ngForOf]="precios" let-i="index">
+                                <tr>
+                                    <th scope="col" colspan="3">{{getName(pre.id)}}</th>
+                                </tr>
+                                <tr style="cursor: pointer;" *ngFor="let cost of pre.costos; index as i">
                                     <td>
                                         <ngb-highlight [result]="cost.nombre"></ngb-highlight>
                                     </td>
@@ -145,10 +149,12 @@
                                         <ngb-highlight [result]="'$'+(cost.monthAprox|number:'1.0-5')"></ngb-highlight>
                                     </td>
                                 </tr>
-                                <tr style="cursor: pointer;">
-                                    <td colspan="2">Total</td>
-                                    <td>${{sumMonth()|number:'1.0-5'}}</td>
-                                </tr>
+                                
+                            </ng-template>                                 
+                            <tr style="cursor: pointer;">
+                                <td colspan="2">Total</td>
+                                <td>${{sumMonth()|number:'1.0-5'}}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>

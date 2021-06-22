@@ -63,9 +63,9 @@ export class ProyectoService {
     return this.http.get<Logs[]>(url,this.options).pipe(map((resp:any)=>resp.data));
   }
 
-  getPrecios(id:number):Observable<Services[]>{
-    const url =`${this.serviciosurl}/proyecto/${id}/costos`;
-    return this.http.get<Services[]>(url,this.options).pipe(map((resp:any)=>resp.data));
+  getPrecios(id:number):Observable<any[]>{
+    const url =`${this.proyectosUrl}/${id}/costos`;
+    return this.http.get<any[]>(url,this.options).pipe(map((resp:any)=>resp.data));
   }
 
   getDesplegados():Observable<any>{
