@@ -88,7 +88,9 @@
             <ng-container ngbNavItem>
                 <a ngbNavLink>Logs</a>
                 <ng-template ngbNavContent>
+
                     <div style="margin: 30px;">
+                        <p style="color: rgb(9, 8, 102); font-weight: 700;">Repositorios</p>
                     <nav ngbNav #nav="ngbNav" class="nav-tabs">
                         <ng-container *ngFor="let rep of repos" ngbNavItem>
                             <a ngbNavLink (click)="getLogs(rep.id!)">{{rep.nombre}}</a>
@@ -136,7 +138,7 @@
                             <tbody>
                                 <ng-template ngFor let-pre [ngForOf]="precios" let-i="index">
                                 <tr>
-                                    <th scope="col" colspan="3">{{getName(pre.id)}}</th>
+                                    <th scope="col" colspan="3" style="color: rgb(9, 8, 102); font-weight: 700;">Repositorio - {{getName(pre.id)}}</th>
                                 </tr>
                                 <tr style="cursor: pointer;" *ngFor="let cost of pre.costos; index as i">
                                     <td>

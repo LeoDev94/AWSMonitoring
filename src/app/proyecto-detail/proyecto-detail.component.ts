@@ -65,8 +65,8 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
-  getName(id:number){
-    let rep = this.repos.find(()=>{return{id:id}});
+  getName(nid:number){
+    let rep = this.repos.find((rep)=>{return rep.id==nid});
     if(rep){
       return rep.nombre;
     }
