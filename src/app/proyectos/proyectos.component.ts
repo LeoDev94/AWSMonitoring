@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import {ProyectoService} from 'src/app/proyecto.service'
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { PROJECTS } from 'src/util/constants';
+//import { PROJECTS } from 'src/util/constants';
 import { Project,ProjectApi } from 'src/util/types';
 
 import { faTrashAlt, faEdit } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,7 @@ export class ProyectosComponent implements OnInit{
   //projects$: Observable<Project[]>;
   projects$:Project[] = [];
   filter = new FormControl('');
-  localProjects = PROJECTS;
+ // localProjects = PROJECTS;
 
   faTrashAlt = faTrashAlt;
   faEdit = faEdit;
@@ -41,7 +41,10 @@ export class ProyectosComponent implements OnInit{
   primerDespliegue = "";
   managers: string[] = [];
   repositorio = "";
+  repos:any[] = [];
   pmTempName = "";
+  repoTempName="";
+  repoTempUrl="";
   idTemp = 0;
 
   states = ['Activo','Inactivo','Terminado'];
@@ -60,6 +63,7 @@ export class ProyectosComponent implements OnInit{
     this.getProyectos();
     this.projectSearch('');
   }
+
 
   getProyectos(){
     this.proyectoService.getProyectos().subscribe(proyectos=>{
@@ -82,7 +86,7 @@ export class ProyectosComponent implements OnInit{
   }
 
   createProyecto(newProject:ProjectApi){
-    this.proyectoService.addProyecto(newProject).subscribe(project=>{
+    this.proyectoService.addProyecto(newProject,this.repos).subscribe(project=>{
       this.projects$.push(project);
       Swal.fire({
         icon: 'success',
@@ -94,7 +98,7 @@ export class ProyectosComponent implements OnInit{
   }
 
   updateProyecto(updatedProject:ProjectApi){
-    this.proyectoService.updateProyecto(updatedProject).subscribe(project=>{
+    this.proyectoService.updateProyecto(updatedProject,this.repos).subscribe(project=>{
       Swal.fire({
         icon: 'success',
         title: 'Genial',
@@ -161,6 +165,20 @@ export class ProyectosComponent implements OnInit{
     }
   }
 
+  addRepo(){
+    if (this.repoTempName == ""||this.repoTempUrl=="") {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Debes ingresar por lo menos un respositorio',
+      })
+    } else {
+      this.repos.push({nombre:this.repoTempName,url:this.repoTempUrl});
+      this.repoTempName = "";
+      this.repoTempUrl="";
+    }
+  }
+
   deleteProjectManager(name: string) {
     let index = this.managers.indexOf(name);
     if (index > -1) {
@@ -168,8 +186,16 @@ export class ProyectosComponent implements OnInit{
     }
   }
 
+
+  deleteRepo(name:string,url:string){
+    let index = this.repos.indexOf({nombre:name,url:url});
+    if (index > -1) {
+      this.repos.splice(index, 1);
+    }
+  }
+
   saveProject(edit?: boolean) {
-    if (this.codigo == "" || this.estado == "" || this.repositorio == "" || this.managers.length == 0||this.tecnologia==""||this.tipo=="") {
+    if (this.codigo == "" || this.estado == "" || this.repos.length <= 0 || this.managers.length == 0||this.tecnologia==""||this.tipo=="") {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
@@ -184,7 +210,7 @@ export class ProyectosComponent implements OnInit{
         tecnologia:this.tecnologia,
         tipo:this.tipo,
         managers: this.managers,
-        repositorio: this.repositorio
+        //repositorio: this.repositorio
       }
       if (edit) {
         let updatedProject = auxProject as ProjectApi;
@@ -213,8 +239,9 @@ export class ProyectosComponent implements OnInit{
     this.deploymentState = project.deploymentState;
     this.primerDespliegue = project.primerDespliegue!;
     this.ultimoDespliegue = project.ultimoDespliegue!;
-    this.repositorio = project.repositorio!;
+    //this.repositorio = project.repositorio!;
     this.managers = project.managers;
+    this.repos = project.repositorios
   }
 
   sleep(time: any) {

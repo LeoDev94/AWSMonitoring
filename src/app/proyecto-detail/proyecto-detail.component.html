@@ -42,27 +42,33 @@
                                     <p style="font-size: 14px; color: rgb(9, 8, 102);">{{ project?.ultimoDespliegue! }}</p>
                                 </div>
                             </div>
-                            <div style="height: 100px; width: 100%;">
+                            <div style="width: 100%;">
                                 <div style="padding-top: 15px; padding-bottom: 15px; padding-left: 15px;">
                                     <p style="font-size: 15px; color: rgb(9, 8, 102); font-weight: 500;">
                                         <fa-icon [icon]="faCodeBranch" style="margin-right: 15px;"></fa-icon>
-                                        Repositorio
+                                        Repositorios
                                     </p>
-                                    <p style="font-size: 14px; color: rgb(9, 8, 102);">{{ project?.repositorio }}</p>
-                                    <label *ngIf="project?.deploymentState=='No Desplegado'" style="margin-left: 50px; background-color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
-                                    class="btn-primary" (click)="desplegarProyecto()" ngbButtonLabel>
-                                    Desplegar
-                                    </label>
+                                    <div *ngFor="let rep of repos;index as i">
+                                        <p style="font-size: 15px; color: rgb(9, 8, 102); font-weight: 500;">Nombre</p>
+                                        <p style="font-size: 12px; color: rgb(9, 8, 102);">{{ rep.nombre }}</p>
+                                        <p style="font-size: 15px; color: rgb(9, 8, 102); font-weight: 500;">Url</p>
+                                        <p style="font-size: 12px; color: rgb(9, 8, 102);">{{ rep.url }}</p>
+                                        <label *ngIf="project?.deploymentState=='No Desplegado'" style="margin-left: 50px; background-color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                        class="btn-primary" (click)="desplegarProyecto()" ngbButtonLabel>
+                                        Desplegar
+                                        </label>
+                                        <span style="border-color: black; border: 2px; width: 100%;display: block;height: 1px;background-color: black;"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <div ngbDropdown class="d-inline-block" style="float: left;margin: 100px 70px 100px 70px;">
-                            <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
-                                class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>{{metrica}}</button>
-                                
-                            <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
-                                <button ngbDropdownItem *ngFor="let met of listaMetricas" (click)="selectMetrica(met)">{{met}}</button>
+                        <div>
+                            <div *ngFor="let listMet of listaMetricas" ngbDropdown class="d-inline-block" style="float: left;margin: 100px 70px 100px 70px;">
+                                <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
+                                    class="btn btn-outline-primary" id="dropdownBasic1" ngbDropdownToggle>{{metrica}}</button>
+                                <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                    <button ngbDropdownItem *ngFor="let met of listMet.data" (click)="selectMetrica(listMet.data,met,listMet.id)">{{met}}</button>
+                                </div>
                             </div>
                         </div>
                         <button style="font-weight: 500;color: rgb(9, 8, 102); border-color: rgb(9, 8, 102);"
@@ -78,31 +84,45 @@
                     </div>
                 </ng-template>
             </ng-container>
+            <!--Logs-->
             <ng-container ngbNavItem>
                 <a ngbNavLink>Logs</a>
                 <ng-template ngbNavContent>
+
                     <div style="margin: 30px;">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Hora Incidencia</th>
-                                    <th scope="col">Mensaje</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr style="cursor: pointer;" *ngFor="let event of msjLogs; index as i">
-                                    <td>
-                                        <ngb-highlight [result]="event.horaOcurrencia.toString()"></ngb-highlight>
-                                    </td>
-                                    <td>
-                                        <ngb-highlight [result]="event.mensaje"></ngb-highlight>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                        <p style="color: rgb(9, 8, 102); font-weight: 700;">Repositorios</p>
+                    <nav ngbNav #nav="ngbNav" class="nav-tabs">
+                        <ng-container *ngFor="let rep of repos" ngbNavItem>
+                            <a ngbNavLink (click)="getLogs(rep.id!)">{{rep.nombre}}</a>
+                        <ng-template ngbNavContent>
+                            <div style="margin: 30px;">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Hora Incidencia</th>
+                                            <th scope="col">Mensaje</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="cursor: pointer;" *ngFor="let event of msjLogs; index as i">
+                                            <td>
+                                                <ngb-highlight [result]="event.horaOcurrencia.toString()"></ngb-highlight>
+                                            </td>
+                                            <td>
+                                                <ngb-highlight [result]="event.mensaje"></ngb-highlight>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </ng-template>
+                    </ng-container>
+                    </nav>
+                    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+                </div>
                 </ng-template>
             </ng-container>
+            <!---   COSTOS  -->
             <ng-container ngbNavItem>
                 <a ngbNavLink>Costos</a>
                 <ng-template ngbNavContent>
@@ -116,7 +136,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="cursor: pointer;" *ngFor="let cost of precios; index as i">
+                                <ng-template ngFor let-pre [ngForOf]="precios" let-i="index">
+                                <tr>
+                                    <th scope="col" colspan="3" style="color: rgb(9, 8, 102); font-weight: 700;">Repositorio - {{getName(pre.id)}}</th>
+                                </tr>
+                                <tr style="cursor: pointer;" *ngFor="let cost of pre.costos; index as i">
                                     <td>
                                         <ngb-highlight [result]="cost.nombre"></ngb-highlight>
                                     </td>
@@ -127,10 +151,12 @@
                                         <ngb-highlight [result]="'$'+(cost.monthAprox|number:'1.0-5')"></ngb-highlight>
                                     </td>
                                 </tr>
-                                <tr style="cursor: pointer;">
-                                    <td colspan="2">Total</td>
-                                    <td>${{sumMonth()|number:'1.0-5'}}</td>
-                                </tr>
+                                
+                            </ng-template>                                 
+                            <tr style="cursor: pointer;">
+                                <td colspan="2">Total</td>
+                                <td>${{sumMonth()|number:'1.0-5'}}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>

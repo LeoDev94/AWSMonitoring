@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PROJECTS } from 'src/util/constants';
-import { Project,Logs, Services } from 'src/util/types';
+//import { PROJECTS } from 'src/util/constants';
+import { Project,Logs, Services,ProjectApi, RepositorioApi } from 'src/util/types';
 import { faUsers, faRocket, faCodeBranch, faArchive, faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import { ProyectoService } from '../proyecto.service';
 import { number } from 'echarts';
@@ -21,12 +21,14 @@ export class ProyectoDetailComponent implements OnInit {
   faCodeBranch = faCodeBranch;
   faArchive = faArchive;
   faChevronLeft = faChevronLeft;
-  listaMetricas:string[]=[];
+  listaMetricas:any[]=[];
   metrica:string="Métricas";
   options: any;
   msjLogs:Logs[] =[];
-  precios:Services[]=[];
+  precios:any[]=[];
   timeframe:string='lastHora';
+  repos:RepositorioApi[]=[];
+
   constructor(private route: ActivatedRoute, private router: Router,private proyectoService: ProyectoService) {
   }
 
@@ -42,6 +44,19 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
+  getRepos(){
+    const id = this.route.snapshot.paramMap.get('id');
+    if(id){
+      const nid = +id;
+      this.proyectoService.getRepos(nid).subscribe(reps=>{
+        this.repos = reps;
+        if(this.repos.length>0){
+          this.getLogs(this.repos[0].id!);
+        }
+      });
+    }
+  }
+
   getListaMetricas(){
     const id = this.route.snapshot.paramMap.get('id');
     if(id){
@@ -50,9 +65,17 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
-  getMetricData(){
-    if(this.listaMetricas.includes(this.metrica)){
-      const id = this.route.snapshot.paramMap.get('id');
+  getName(nid:number){
+    let rep = this.repos.find((rep)=>{return rep.id==nid});
+    if(rep){
+      return rep.nombre;
+    }
+    return "";
+  }
+
+  getMetricData(lista:any[],id:number){
+    if(lista.includes(this.metrica)){
+      //const id = this.route.snapshot.paramMap.get('id');
       if(id){
         const nid = +id;
         this.proyectoService.getMetricData(nid,this.metrica,this.timeframe).subscribe(dat=>{
@@ -64,10 +87,11 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
-  getLogs(){
-    const id = this.route.snapshot.paramMap.get('id');
+  getLogs(id:number){
+    //const id = this.route.snapshot.paramMap.get('id');
     if(id){
       const nid = +id
+      
       this.proyectoService.getLogs(nid).subscribe((dat)=>{
         this.msjLogs = dat;
       })
@@ -78,20 +102,22 @@ export class ProyectoDetailComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if(id){
       const nid = +id;
-      this.proyectoService.getPrecios(nid).subscribe((dat)=>{
-        this.precios=dat;
-        this.precios = this.precios.map(dat=>{
-          if(dat.unidad === 'OnPremUpdates'){
-            dat.usd = 0;
-            dat.unidad = 'EC2Updates'
-          }
-          if(dat.unidad==='Hrs'||dat.unidad==='GB-Mo'){
-            dat.monthAprox = dat.usd*24*30;
-          }else{
-            dat.monthAprox = dat.usd;
-          }
-          return dat;
-        })
+      this.proyectoService.getPrecios(nid).subscribe((data)=>{
+        this.precios=data;
+        for(let dato of this.precios){
+          dato.costos = dato.costos.map((dat:any)=>{
+            if(dat.unidad === 'OnPremUpdates'){
+              dat.usd = 0;
+              dat.unidad = 'EC2Updates'
+            }
+            if(dat.unidad==='Hrs'||dat.unidad==='GB-Mo'){
+              dat.monthAprox = dat.usd*24*30;
+            }else{
+              dat.monthAprox = dat.usd;
+            }
+            return dat;
+          });
+        }
       });
     }
   }
@@ -112,9 +138,9 @@ export class ProyectoDetailComponent implements OnInit {
     }
   }
 
-  selectMetrica(met:string){
+  selectMetrica(lista:any[],met:string,id:number){
     this.metrica=met;
-    this.getMetricData();
+    this.getMetricData(lista,id);
   }
 
   goBack() {
@@ -152,24 +178,27 @@ export class ProyectoDetailComponent implements OnInit {
 
   changeTimeFrame(tf:string){
     this.timeframe = tf;
-    this.getMetricData();
+    //this.getMetricData();
   }
 
   sumMonth(){
     var suma:number = 0;
-    this.precios.forEach(pre=>{
-      suma += +pre.monthAprox;
-    });
-    console.log(suma);
+    for(let pre of this.precios){
+      for(let cost of pre.costos){
+        suma+= +cost.monthAprox;
+      }
+    }
     return suma;
   }
 
   incializarDatos(){
     this.getProyecto();
     this.getListaMetricas();
-    this.getLogs();
+   
     this.setGraph([],[]);
     this.getPrecios();
+    this.getRepos();
+   
   }
 
   ngOnInit(): void {

@@ -1,3 +1,10 @@
+export interface RepositorioApi{
+    id:number|null;
+    nombre:string;
+    url:string;
+    ultimoDespliegue:string|null;
+    primerDespliegue:string|null;
+}
 export interface ProjectApi{
     id:number|null;
     nombre: string,
@@ -8,5 +15,5 @@ export interface ProjectApi{
     tecnologia:string;
     tipo:string;
     managers: string[];
-    repositorio: string;
+    repositorios:RepositorioApi[]
 }
